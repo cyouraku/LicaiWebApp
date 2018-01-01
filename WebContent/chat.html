@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript">
+var websocket = null;
+//判断当前浏览器是否支持WebSocket
+if ('WebSocket' in window) {
+	websocket = new WebSocket("ws://localhost:8080/LicaiWebApp/chat");
+} else {
+	alert('The current browser does not support websocket')
+}
+//returen error msg if connectiong error
+websocket.onerror = function() {
+	setMessageInnerHTML("WebSocket Connecting Error!");
+};
+//echo when connection success
+websocket.onopen = function() {
+	setMessageInnerHTML("WebSocket Connecting Success!");
+}
+//function to get msg
+websocket.onmessage = function(event) {
+	setMessageInnerHTML(event.data);
+}
+//function to close websocket
+websocket.onclose = function() {
+	setMessageInnerHTML("WebSocket Connecting Closed!");
+}
+//Close websocket when window closed, in order to prevent server error.
+window.onbeforeunload = function() {
+	closeWebSocket();
+}
+
+//output msg on web page
+function setMessageInnerHTML(innerHTML) {
+	document.getElementById('message').innerHTML += innerHTML + '<br/>';
+}
+
+//close websocket connecting
+function closeWebSocket() {
+	websocket.close();
+}
+//semd msg
+function send() {
+	var message = document.getElementById('text').value;
+	websocket.send(message);
+}
+</script>
+</head>
+<body>
+Welcome<br/>
+<input id="text" type="text"/>
+<button onclick="send()">Send Msg</button>
+<hr/>
+<button onclick="closeWebSocket()">Close websocket connection.</button>
+<hr/>
+<div id="message"></div>
+</body>
+</html>
